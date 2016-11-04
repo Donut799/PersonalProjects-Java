@@ -1,0 +1,54 @@
+import java.util.Scanner;
+public class userInput
+{
+	static Scanner input = new Scanner(System.in);
+	public static void reroll(int[] rollArray, int[] newRoll, int start)
+	{
+		//get the Dice that need to be rerolled.
+		String answer;
+		tryagain: do
+		{
+			
+			answer = input.nextLine().replaceAll("\\s+","");
+			System.out.println(answer);
+			//check if their answer contain only 1-6
+			if(answer.matches("[1-6]+"))
+			{
+				//decide if those dice are allowed to be rerolled
+					//find any repeats
+					
+					for (int i = 0; i < answer.length()-1;i++)
+					{
+						for(int j = i+1; j < answer.length(); j++)
+						{
+
+							if(answer.charAt(i)==answer.charAt(j))
+							{
+								System.out.print("\nYou have entered duplicate numbers. Enter the Dice you want to reroll: ");
+								continue tryagain;
+							}
+						}					
+					}
+				//check if there are too many answers
+				if(answer.length()>4)
+				{
+					System.out.print("\nYou have entered to many numbers. Try again: ");     
+					continue;
+					
+				}
+				for(int i = 0; i < answer.length(); i++)
+				{
+					rollArray[start+answer.charAt(i)-48]=0;
+				}
+				return;
+				
+			}		
+			
+			else
+			{
+				System.out.print("\nYou have not entered correct numbers. Enter the number that corresponds to the die/dice you want to reroll: ");
+			}
+			
+		}while(true);
+	}
+}

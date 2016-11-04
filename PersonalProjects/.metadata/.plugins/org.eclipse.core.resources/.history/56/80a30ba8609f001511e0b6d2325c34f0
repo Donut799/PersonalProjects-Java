@@ -1,0 +1,92 @@
+/*This program accepts a 16-digit number from the user and uses the Luhn
+ * algorithm to determine whether or not the number is a valid credit 
+ * number.
+ * 
+ * Date: Dec 9, 2015
+ * Author: Brendan Smith
+ * EECS 1000
+ */
+
+package luhnAlgorithm;
+
+import java.util.Scanner;
+
+public class LuhnAlgorithm
+{
+
+	public static void main(String [] args)
+	{
+		boolean validity = false ;
+		long cardNo;
+		Scanner input = new Scanner(System.in);
+		Scanner question = new Scanner(System.in);
+	do
+	{//prompt user for 16 digit credit card number
+		System.out.print("Enter a 16-digit number: "+"\n");
+		int sum = 0;
+		do
+		{
+			cardNo = input.nextLong();
+		
+		//determine if number is 16 digits
+		if(cardNo > 9999999999999999L || cardNo < 1000000000000000L)
+		{
+			System.out.print("Invalid number of digits, Please enter a 16-digit number: "+"\n");
+			//cardNo = input.nextLong();
+		}
+		
+		}
+		while (cardNo > 9999999999999999L || cardNo < 1000000000000000L);
+		
+			//get the leftmost 2 digit pair 
+		for(int digitPairs=1; digitPairs <=8; digitPairs++)
+			{
+				long b = cardNo%10;
+				cardNo /= 10;
+				long a = cardNo%10;
+				cardNo /= 10;
+						
+				//find 2a*b, if 2a is > 9 find (2a*b)-9
+				if (a>4)
+				{
+					 sum +=2*a+b-9;
+				}
+				else
+				{
+					sum += 2*a+b;
+				}
+			}
+			//determine if divisible by 10 with no remainder.
+			if (sum %10==0)
+			{
+			System.out.print ("You have a valid credit card"+"\n"+
+			"Would you like to enter another number y/n "+"\n");
+			char answer = question.next().trim().charAt(0);
+			char y = 'y', Y='Y', N='N', n='n';
+			
+			//find out if user wants to enter another number
+			if(answer == y|| answer == Y)
+			{
+				validity = false;
+			}
+			
+			if(answer == n|| answer == N)
+			{
+				validity = true;
+			}
+			}
+			//when division is not pretty 
+			else
+				{
+				System.out.print("You have an invalid credit card number"+"\n");
+			
+			validity = false;
+				}
+			
+	}
+			while(validity==false);
+	input.close();
+	question.close();
+	}
+	}
+

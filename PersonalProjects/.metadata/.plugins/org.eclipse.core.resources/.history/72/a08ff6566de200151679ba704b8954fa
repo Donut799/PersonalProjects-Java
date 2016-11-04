@@ -1,0 +1,308 @@
+import java.util.Scanner;
+public class Player
+{
+		static Scanner input = new Scanner(System.in);
+		static int numplayers = 0;
+		static int turn = 0;
+		
+		String name = "?";
+		int score = 0;
+		int startValue = 500;
+		
+		//integer of the points required in a turn to be allowed to end that turn
+		int endPoints = 500;
+		
+		Player()
+		{
+			numplayers++;
+			name = "player"+numplayers;
+		}
+		
+		Player(String name)
+		{
+			numplayers++;
+			this.name = name;
+		}
+		
+		//number of players that are playing the game.
+		public static int getNumPlayer()
+		{
+			return numplayers;
+		}
+		
+		public static int whoseTurn()
+		{
+			return turn;
+		}
+		
+		public String getName()
+		{
+			return name;
+		}
+		
+		public int getPoints()
+		{
+			return score;
+		}
+		
+		public void turn()
+		{
+			int[] rollArray = new int[5];	
+			
+			
+			int[] newRoll = new int [5];
+			
+			int points = 0;
+			
+			int rollpoints = 0;
+			
+			for(int i = 0; i < 5; i ++)
+			{
+				rollArray[i] = 0;
+			}
+			//ask to roll
+			System.out.print(getName()+" ");
+			do
+			{
+				System.out.print("press R to roll: ");
+				if(input.nextLine().toUpperCase().equals("R"))
+				{
+					break;
+				}
+				
+			}while(true);
+			//turn loop includes...
+			do
+			{		
+				//set the points for the current roll to zero
+				rollpoints = 0;
+					//reset newRoll array
+					for (int i = 0; i < 5; i++)
+					{
+						newRoll[i]=0;
+					}
+			//rearrange dice so that all the dice that can't be rerolled(are not zero) this turn are first
+					for(int i = 0; i < 5; i++)
+					{
+						if(rollArray[i]==0)
+						{
+							for(int j = i+1; j < 5; j++)
+							{
+								if(rollArray[j]>0)
+								{
+									rollArray[i]=rollArray[j];
+									rollArray[j]=0;
+								}
+							}
+						}
+					}
+					
+				//roll any dice that have been flagged to zero	
+				for (int i = 0; i < 5; i++)
+				{
+					if (rollArray[i] == 0)
+					{
+						int roll = Dice.getRoll();
+						
+						rollArray[i] = roll;
+						newRoll[i] = roll;
+					}
+				}
+				
+				Dice.displayRoll(rollArray);
+				
+				//decide if they lost
+				points += rollpoints = calcPoints(newRoll);
+				System.out.println("\nYou have "+rollpoints+" points this turn and your current score is "+points);
+				if (rollpoints==0)
+				{
+					System.out.println("\nNo points scored this turn ");
+					return;
+				}
+				
+				
+				
+				//evaluate if enough points and add points to the score of this turn
+				if(points>=endPoints)
+				{
+					
+
+					//if enough points to keep, ask if they want to reroll or keep
+					do
+					{
+					//if keep exit and if reroll ask which to reroll.
+					System.out.print("\nYou have enough points to end this turn. press E to end turn or C to continue: ");
+					String ask = input.nextLine().toUpperCase();
+					if(ask.equals("E"))
+					{
+						endPoints = 250;
+					}
+					else if(ask.equals("C"))
+					{
+						break;
+					}
+					}while(true);
+				}
+				
+				System.out.print("\nWhich dice would you like to reroll:");
+				
+				userInput.reroll(rollArray, newRoll, 0);
+				
+								
+			}while(true);
+			
+						
+		}
+		
+		public static int calcPoints(int[] newRollArray)
+		{
+			int points = 0;
+			int [] diceCount = new int[6];
+			for(int i = 0; i < 5; i++)
+			{
+				
+				switch(newRollArray[i])
+				{
+				case 1: diceCount[0]++;
+						break;
+				
+				case 2:	diceCount[1]++;
+						break;
+						
+				case 3: diceCount[2]++;
+						break;
+						
+				case 4: diceCount[3]++;
+						break;
+						
+				case 5:	diceCount[4]++;
+						break; 
+						
+				case 6: diceCount[5]++;
+						break;
+						
+				default:
+					
+				}
+			}
+			
+			//check for straights
+			if(diceCount[0]==1&&diceCount[1]==1&&diceCount[2]==1&&diceCount[3]==1&&diceCount[4]==1) 
+				{
+					
+					return 1000;
+				}
+			if(diceCount[1]==1&&diceCount[2]==1&&diceCount[3]==1&&diceCount[4]==1&&diceCount[5]==1) return 1000;
+			
+			//check for matches(three or more)
+			
+			//check for ones
+			switch(diceCount[0])
+			{
+			case 3: points+=1000;
+					diceCount[0]=0;
+					break;
+			case 4: points+=2000;
+					diceCount[0]=0;
+					break;
+			case 5: points+=3000;//??????
+					diceCount[0]=0;
+					break;
+			default:
+			}
+			
+			//check for twos
+			switch(diceCount[1])
+			{
+			case 3: points+=200;
+					diceCount[1]=0;
+					break;
+			case 4: points+=400;
+					diceCount[1]=0;
+					break;
+			case 5: points+=600;//??????
+					diceCount[1]=0;
+					break;
+			default:
+			}
+			
+			//check for threes
+			switch(diceCount[2])
+			{
+			case 3: points+=300;
+					diceCount[2]=0;
+					break;
+			case 4: points+=600;
+					diceCount[2]=0;		
+					break;
+			case 5: points+=900;//??????
+					diceCount[2]=0;
+					break;
+			default:
+			}
+			
+			//check for fours
+			switch(diceCount[3])
+			{
+			case 3: points+=400;
+					diceCount[3]=0;
+					break;
+			case 4: points+=800;
+					diceCount[3]=0;
+					break;
+			case 5: points+=1200;//??????
+					diceCount[3]=0;
+					break;
+			default:
+			}
+			
+			//check for fives
+			switch(diceCount[4])
+			{
+			case 3: points+=500;
+					diceCount[4]=0;
+					break;
+			case 4: points+=1000;
+					diceCount[4]=0;
+					break;
+			case 5: points+=1500;//??????
+					diceCount[4]=0;
+					break;
+			default:
+			}
+			
+			//check for sixes
+			switch(diceCount[5])
+			{
+			case 3: points+=600;
+					diceCount[5]=0;
+					break;
+			case 4: points+=1200;
+					diceCount[5]=0;
+					break;
+			case 5: points+=1800;//??????
+					diceCount[5]=0;
+					break;
+			default:
+			}
+			
+			//check for remaining 5s or 1s
+			points += diceCount[0]*100;
+			points += diceCount[4]*50;
+			
+			
+			
+			
+			return points;
+		}
+}
+
+
+
+
+
+
+
+
+
+
