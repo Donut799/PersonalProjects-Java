@@ -42,7 +42,7 @@ public class ScheduleTab extends Tab
 				ScrollPane scrollWeekPane = new ScrollPane();
 					weekFlowPane = new FlowPane();
 					weekFlowPane.setAlignment(Pos.TOP_CENTER);
-					weekFlowPane.setBackground(new Background(new BackgroundFill(Color.BLACK,CornerRadii.EMPTY,Insets.EMPTY)));
+					//weekFlowPane.setBackground(new Background(new BackgroundFill(Color.BLACK,CornerRadii.EMPTY,Insets.EMPTY)));
 					refreshWeekCount();
 				scrollWeekPane.setContent(weekFlowPane);
 				scrollWeekPane.setFitToWidth(true);
