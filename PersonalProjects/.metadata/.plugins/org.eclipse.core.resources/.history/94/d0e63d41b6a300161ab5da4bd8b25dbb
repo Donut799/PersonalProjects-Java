@@ -57,11 +57,10 @@ public class RecipeTab extends Tab
 							Label nameLabel = new Label("Name:");
 							nameLabel.setPadding(new Insets(0,10,0,0));
 							TextField nameTextBox = new TextField();
-							nameTextBox.setPadding(new Insets(0,100,5,0));
+							nameTextBox.setPadding(new Insets(0,100,0,0));
 							Label timeLabel = new Label("Time: ");
-							timeLabel.setPadding(new Insets(0,0,0,10));
+							timeLabel.setPadding(new Insets(0,0,0,0));
 							TextField timeTextBox = new TextField();
-							timeTextBox.setPadding(new Insets(0,100,5,0));
 						editRecipeTopOptions.getChildren().addAll(nameLabel,nameTextBox,timeLabel,timeTextBox);
 						HBox editRecipeOptionsPane = new HBox();
 							Button editRecipeSaveButton = new Button("Save");
