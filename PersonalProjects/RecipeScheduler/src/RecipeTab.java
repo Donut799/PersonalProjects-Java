@@ -1,17 +1,22 @@
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.util.Scanner;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderStroke;
@@ -21,11 +26,8 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 
@@ -50,29 +52,105 @@ public class RecipeTab extends Tab
 	}
 	private void setEditRecipeView(String recipeName)
 	{
+		String recipe = null;
+		String time = null;
+		String ingredients = null;
+		if(new File(workingDirectory + "/" + recipeName).exists())
+		{
+			File recipeFile = new File(workingDirectory + "/" + recipeName + "/recipe.txt");
+			if(recipeFile.exists())
+			{
+				try
+				{
+					recipe = new Scanner(recipeFile).useDelimiter("\\Z").next();
+				} catch (FileNotFoundException e1)
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			File dataFile = new File(workingDirectory + "/" + recipeName + "/data.txt");
+			if(dataFile.exists())
+			{
+				try
+				{
+					Scanner scanner = new Scanner(dataFile);
+					if(scanner.hasNextLine())
+					time = scanner.nextLine();
+					if(scanner.hasNextLine())
+					ingredients = scanner.nextLine();
+					
+				} catch (FileNotFoundException e1)
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			
+		}
+		
 			BorderPane editRecipeBorderPane = new BorderPane();
 				ScrollPane editRecipeScrollPane = new ScrollPane();
 					VBox editRecipeVBox = new VBox();
 						HBox editRecipeTopOptions = new HBox();
 							Label nameLabel = new Label("Name:");
-							nameLabel.setPadding(new Insets(0,10,0,0));
-							TextField nameTextBox = new TextField();
-							nameTextBox.setPadding(new Insets(0,100,5,0));
+							nameLabel.setPadding(new Insets(0,10,0,20));
+							TextField nameTextBox = null;
+							if(recipeName == null)
+							{
+								nameTextBox = new TextField();
+								nameTextBox.setPadding(new Insets(0,100,5,0));
+							}
 							Label timeLabel = new Label("Time: ");
 							timeLabel.setPadding(new Insets(0,0,0,10));
 							TextField timeTextBox = new TextField();
+							timeTextBox.setText(time);
 							timeTextBox.setPadding(new Insets(0,100,5,0));
-						editRecipeTopOptions.getChildren().addAll(nameLabel,nameTextBox,timeLabel,timeTextBox);
-						HBox editRecipeOptionsPane = new HBox();
-							Button editRecipeSaveButton = new Button("Save");
-							editRecipeSaveButton.setOnMouseClicked(e -> saveRecipeButton_Click(e));
-							Button editRecipeCancelButton = new Button("Cancel");
-						editRecipeOptionsPane.getChildren().add(editRecipeSaveButton);
-						editRecipeOptionsPane.getChildren().add(editRecipeCancelButton);
-					editRecipeVBox.getChildren().addAll(editRecipeTopOptions,editRecipeOptionsPane);
+						editRecipeTopOptions.getChildren().add(nameLabel);
+						if(nameTextBox != null)editRecipeTopOptions.getChildren().add(nameTextBox);
+						else 
+						{
+							Label recipeLabel = new Label(recipeName);
+							recipeLabel.setFont(Font.font("Arial", FontPosture.REGULAR, 18));
+							editRecipeTopOptions.getChildren().add(recipeLabel);
+						}
+						editRecipeTopOptions.getChildren().addAll(timeLabel,timeTextBox);
+						Label recipeTextFieldLabel = new Label("Recipe:");
+						recipeTextFieldLabel.setPadding(new Insets(0,0,0,20));
+						HBox recipeTextAreaOrganizer = new HBox();
+						recipeTextAreaOrganizer.setPadding(new Insets(0,0,0,20));
+							TextArea recipeTextArea = new TextArea();
+							recipeTextArea.prefWidthProperty().bind(editRecipeScrollPane.widthProperty());
+							recipeTextArea.setPrefHeight(500);
+						recipeTextAreaOrganizer.getChildren().add(recipeTextArea);
+						HBox ingredientOptionHBox = new HBox();
+							Label ingredientLabel = new Label("Ingredients");
+							ingredientLabel.setPadding(new Insets(5,10,0,0));
+							Button addRecipeButton = new Button("add");
+							addRecipeButton.setStyle("-fx-background-radius: 0");
+						ingredientOptionHBox.setPadding(new Insets(5,0,2,20));
+						ingredientOptionHBox.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(0,0,2,0))));
+						ingredientOptionHBox.getChildren().addAll(ingredientLabel,addRecipeButton);
+						VBox ingredientVBox = new VBox();
+							
+					editRecipeVBox.getChildren().addAll(editRecipeTopOptions,recipeTextFieldLabel,recipeTextAreaOrganizer,ingredientOptionHBox);
 				editRecipeScrollPane.setPadding(new Insets(8,5,5,5));
+				//editRecipeScrollPane.fitToHeightProperty();
 				editRecipeScrollPane.setContent(editRecipeVBox);
-			editRecipeBorderPane.setTop(editRecipeScrollPane);
+				Pane editRecipeOptionsPane = new Pane();
+				editRecipeOptionsPane.setPadding(new Insets(0,0,5,0));
+					Button editRecipeSaveButton = new Button("Save");
+					editRecipeSaveButton.setStyle("-fx-background-radius: 0");
+					editRecipeSaveButton.setLayoutX(5);
+					editRecipeSaveButton.setLayoutY(5);
+					editRecipeSaveButton.setOnMouseClicked(e -> saveRecipeButton_Click(e));
+					Button editRecipeCancelButton = new Button("Cancel");
+					editRecipeCancelButton.setStyle("-fx-background-radius: 0");
+					editRecipeCancelButton.setLayoutX(50);
+					editRecipeCancelButton.setLayoutY(5);
+				editRecipeOptionsPane.getChildren().add(editRecipeSaveButton);
+				editRecipeOptionsPane.getChildren().add(editRecipeCancelButton);
+			editRecipeBorderPane.setCenter(editRecipeScrollPane);
 			editRecipeBorderPane.setBottom(editRecipeOptionsPane);
 		this.setContent(editRecipeBorderPane);
 	}

@@ -22,10 +22,6 @@ public class RecipeScheduler extends Application
 				System.out.println("Creation of  temp working directory failed");
 		
 		
-		
-		
-		
-		
 		File testFolderSystem = new File(workingDirectory + "");
 		if(testFolderSystem.exists());//not used... what was this for?
 		
