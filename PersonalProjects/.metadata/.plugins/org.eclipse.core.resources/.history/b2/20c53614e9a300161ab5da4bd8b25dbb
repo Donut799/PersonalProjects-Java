@@ -140,8 +140,8 @@ public class RecipeTab extends Tab
 								{
 										HBox ingredientHBox = new HBox();
 											BorderPane ingredientBorderPane = new BorderPane();
-										//		Label
-									//ingredientVBox.;
+												Label
+									ingredientVBox.;
 								}
 							}
 							

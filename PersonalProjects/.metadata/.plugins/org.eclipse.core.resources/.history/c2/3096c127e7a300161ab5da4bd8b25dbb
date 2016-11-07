@@ -132,18 +132,6 @@ public class RecipeTab extends Tab
 						ingredientOptionHBox.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(0,0,2,0))));
 						ingredientOptionHBox.getChildren().addAll(ingredientLabel,addRecipeButton);
 						VBox ingredientVBox = new VBox();
-							if(ingredients != null)
-							{
-								Scanner ingredientParser = new Scanner(ingredients);
-								ingredientParser.useDelimiter(";");
-								while(ingredientParser.hasNext())
-								{
-										HBox ingredientHBox = new HBox();
-											BorderPane ingredientBorderPane = new BorderPane();
-										//		Label
-									//ingredientVBox.;
-								}
-							}
 							
 					editRecipeVBox.getChildren().addAll(editRecipeTopOptions,recipeTextFieldLabel,recipeTextAreaOrganizer,ingredientOptionHBox);
 				editRecipeScrollPane.setPadding(new Insets(8,5,5,5));

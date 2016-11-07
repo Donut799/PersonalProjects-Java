@@ -139,9 +139,8 @@ public class RecipeTab extends Tab
 								while(ingredientParser.hasNext())
 								{
 										HBox ingredientHBox = new HBox();
-											BorderPane ingredientBorderPane = new BorderPane();
-										//		Label
-									//ingredientVBox.;
+											
+									ingredientVBox.getChildren().add(0,ingredientHBox);
 								}
 							}
 							

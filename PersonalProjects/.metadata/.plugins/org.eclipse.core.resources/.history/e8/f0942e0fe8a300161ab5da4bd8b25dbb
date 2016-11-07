@@ -138,10 +138,8 @@ public class RecipeTab extends Tab
 								ingredientParser.useDelimiter(";");
 								while(ingredientParser.hasNext())
 								{
-										HBox ingredientHBox = new HBox();
-											BorderPane ingredientBorderPane = new BorderPane();
-										//		Label
-									//ingredientVBox.;
+									HBox ingredientHBox = new HBox();
+									
 								}
 							}
 							
