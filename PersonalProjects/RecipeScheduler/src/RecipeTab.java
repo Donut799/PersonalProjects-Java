@@ -11,12 +11,9 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderStroke;
@@ -119,7 +116,7 @@ public class RecipeTab extends Tab
 						recipeTextFieldLabel.setPadding(new Insets(0,0,0,20));
 						HBox recipeTextAreaOrganizer = new HBox();
 						recipeTextAreaOrganizer.setPadding(new Insets(0,0,0,20));
-							TextArea recipeTextArea = new TextArea();
+							TextArea recipeTextArea = new TextArea(recipe);
 							recipeTextArea.prefWidthProperty().bind(editRecipeScrollPane.widthProperty());
 							recipeTextArea.setPrefHeight(500);
 						recipeTextAreaOrganizer.getChildren().add(recipeTextArea);
@@ -134,18 +131,31 @@ public class RecipeTab extends Tab
 						VBox ingredientVBox = new VBox();
 							if(ingredients != null)
 							{
+								System.out.println(ingredients);
 								Scanner ingredientParser = new Scanner(ingredients);
 								ingredientParser.useDelimiter(";");
 								while(ingredientParser.hasNext())
 								{
-										HBox ingredientHBox = new HBox();
-											BorderPane ingredientBorderPane = new BorderPane();
-										//		Label
-									//ingredientVBox.;
+									String ingredientString = ingredientParser.next();
+									HBox ingredientHBox = new HBox();
+										BorderPane ingredientBorderPane = new BorderPane();
+											int indexOfComma = ingredientString.indexOf(',');
+											String ingredient = ingredientString.substring(0, indexOfComma);
+											TextField ingredientName = new TextField(ingredient);
+											HBox amountAndDeleteHBox = new HBox();
+												String amount = ingredientString.substring(indexOfComma + 1);
+												TextField ingredientAmount = new TextField(amount);
+												Button deleteIngredientButton = new Button("X");
+												deleteIngredientButton.setStyle("-fx-background-radius: 0; -fx-text-fill: Red");
+											amountAndDeleteHBox.getChildren().addAll(ingredientAmount,deleteIngredientButton);
+										ingredientBorderPane.setLeft(ingredientName);
+										ingredientBorderPane.setRight(amountAndDeleteHBox);
+									ingredientHBox.getChildren().add(ingredientBorderPane);
+						ingredientVBox.getChildren().add(ingredientHBox);
 								}
 							}
 							
-					editRecipeVBox.getChildren().addAll(editRecipeTopOptions,recipeTextFieldLabel,recipeTextAreaOrganizer,ingredientOptionHBox);
+					editRecipeVBox.getChildren().addAll(editRecipeTopOptions,recipeTextFieldLabel,recipeTextAreaOrganizer,ingredientOptionHBox,ingredientVBox);
 				editRecipeScrollPane.setPadding(new Insets(8,5,5,5));
 				//editRecipeScrollPane.fitToHeightProperty();
 				editRecipeScrollPane.setContent(editRecipeVBox);
@@ -239,6 +249,7 @@ public class RecipeTab extends Tab
 		            			editButtonImageView.setFitWidth(20);
 		            	        editButtonImageView.setPreserveRatio(true);
 		            			Button editRecipeBt = new Button("",editButtonImageView);
+		            			editRecipeBt.setId(recipeName);
 		            			editRecipeBt.setStyle("-fx-background-radius: 0");
 		            			editRecipeBt.setPadding(new Insets(2,2,2,2));
 		            			editRecipeBt.setOnMousePressed(e -> editButtonMouseDown(e));
@@ -290,6 +301,8 @@ public class RecipeTab extends Tab
 		{
 			//do nothing
 		}
+		//get the name of the 
+		setEditRecipeView(((Button)e.getSource()).getId());
 	}
 	
 }
