@@ -74,6 +74,7 @@ public class ScheduleTab extends Tab
 		this.setContent(weekLayoutPane);
 		this.setClosable(false);
 	}
+
 	private void weekButtonMouseHandler(MouseEvent e)
 	{
 		if(e.getButton().equals(MouseButton.PRIMARY))
