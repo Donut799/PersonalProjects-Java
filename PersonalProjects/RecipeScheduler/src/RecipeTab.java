@@ -71,14 +71,8 @@ public class RecipeTab extends Tab
 		recipe = null;
 		isNew = false;
 		this.recipeName = null;
-		if(recipeName == null)
-		{
-			isNew = true;
-		}
-		else
-		{
-			this.recipeName = recipeName;
-		}
+		if(recipeName == null)isNew = true;
+		else  this.recipeName = recipeName;
 		
 		
 		this.setText("Edit Recipe");
@@ -108,11 +102,7 @@ public class RecipeTab extends Tab
 					{
 						ingredients = new ArrayList<String>();
 						scanner.useDelimiter(";");
-						while(scanner.hasNext())
-						{
-							ingredients.add(scanner.next());
-						}
-						
+						while(scanner.hasNext())ingredients.add(scanner.next());
 					}
 					
 				} catch (FileNotFoundException e1)
@@ -161,14 +151,16 @@ public class RecipeTab extends Tab
 							recipeTextArea.setOnKeyReleased(e -> recipe_KeyEventHandler(e));
 						recipeTextAreaOrganizer.getChildren().add(recipeTextArea);
 						HBox ingredientOptionHBox = new HBox();
+						final VBox ingredientVBox = new VBox();//this is not where it belongs but i put it here solely for the purpose of allowing the addRecipeButton to be able to reference it in the clickEventHandler
 							Label ingredientLabel = new Label("Ingredients");
 							ingredientLabel.setPadding(new Insets(5,10,0,0));
 							Button addRecipeButton = new Button("add");
 							addRecipeButton.setStyle("-fx-background-radius: 0");
+							addRecipeButton.setOnMouseClicked(e -> addRecipe_Click(ingredientVBox));
 						ingredientOptionHBox.setPadding(new Insets(5,0,2,20));
 						ingredientOptionHBox.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(0,0,2,0))));
-						ingredientOptionHBox.getChildren().addAll(ingredientLabel,addRecipeButton);
-						VBox ingredientVBox = new VBox();
+						ingredientOptionHBox.getChildren().addAll(addRecipeButton, ingredientLabel);
+						//ingredientVBox = new VBox(); this is where this should be
 							if(ingredients != null)
 							{
 								System.out.println(ingredients);
@@ -187,6 +179,7 @@ public class RecipeTab extends Tab
 												ingredientAmount.setId("" + (2*count + 1));
 												ingredientAmount.setOnKeyReleased(e -> ingredient_KeyEventHandler(e));
 												Button deleteIngredientButton = new Button("X");
+												deleteIngredientButton.setFocusTraversable(false);
 												deleteIngredientButton.setStyle("-fx-background-radius: 0; -fx-text-fill: Red");
 											amountAndDeleteHBox.getChildren().addAll(ingredientAmount,deleteIngredientButton);
 										ingredientBorderPane.setLeft(ingredientName);
@@ -222,8 +215,36 @@ public class RecipeTab extends Tab
 	private void ingredient_KeyEventHandler(KeyEvent args)
 	{
 		int indexOfName = Integer.parseInt(((TextField)args.getSource()).getId());
+		System.out.println("id is " + ((TextField)args.getSource()).getId());
 		ingredients.remove(indexOfName);
 		ingredients.add(indexOfName, ((TextField)args.getSource()).getText());
+	}
+	private void addRecipe_Click(VBox ingredientVBox)
+	{
+		ingredients.add("");//add the blank string in the list so that we can replace them later.
+		ingredients.add("");
+		
+				
+				System.out.println(ingredients.size());
+				HBox ingredientHBox = new HBox();
+					BorderPane ingredientBorderPane = new BorderPane();
+						TextField ingredientName = new TextField();
+						ingredientName.setId("" + (ingredients.size() - 2));//id is index in ingredient list
+						ingredientName.setOnKeyReleased(e -> ingredient_KeyEventHandler(e));
+						HBox amountAndDeleteHBox = new HBox();
+							TextField ingredientAmount = new TextField();
+							ingredientAmount.setId("" + (ingredients.size() - 1));
+							ingredientAmount.setOnKeyReleased(e -> ingredient_KeyEventHandler(e));
+							Button deleteIngredientButton = new Button("X");
+							deleteIngredientButton.setStyle("-fx-background-radius: 0; -fx-text-fill: Red");
+						amountAndDeleteHBox.getChildren().addAll(ingredientAmount,deleteIngredientButton);
+					ingredientBorderPane.setLeft(ingredientName);
+					ingredientBorderPane.setRight(amountAndDeleteHBox);
+				ingredientHBox.getChildren().add(ingredientBorderPane);
+		
+		
+		
+		ingredientVBox.getChildren().add(ingredientHBox);
 	}
 	private void time_KeyEventHandler(KeyEvent args)
 	{
@@ -256,10 +277,10 @@ public class RecipeTab extends Tab
 		{
 			PrintWriter dataWriter = new PrintWriter(workingDirectory + "/" + recipeName + "/" + "data.txt","UTF-8");
 			dataWriter.println(time);
-			
+			dataWriter.print(";");
 			for(String ingredientData : ingredients)
 			{
-				dataWriter.print(ingredientData);
+				dataWriter.print(ingredientData + ";");
 			}
 			dataWriter.close();
 			PrintWriter recipeWriter = new PrintWriter(workingDirectory + "/" + recipeName + "/" + "recipe.txt","UTF-8");
@@ -269,9 +290,7 @@ public class RecipeTab extends Tab
 		{
 			e1.printStackTrace();
 		}
-		Alert info = new Alert(AlertType.INFORMATION);
-		info.setContentText("recipeName is " + recipeName + "\n" + "time is " + time + "\n" + "recipe is " + recipe + "\n");
-		info.show();
+		
 		setStandardView();
 	}
 	private void cancelRecipeButton_Click(MouseEvent e)
