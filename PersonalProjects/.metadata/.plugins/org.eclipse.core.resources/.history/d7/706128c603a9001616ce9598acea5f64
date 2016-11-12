@@ -18,6 +18,7 @@ public class RecipeScheduler extends Application
 	public static void main(String[] args)
 	{
 		
+		
 		workingDirectory = System.getProperty("user.dir");
 		
 		File tempTest = new File(workingDirectory);
@@ -34,10 +35,9 @@ public class RecipeScheduler extends Application
 				{
 					String recipeName = recipe.getName();
 					Scanner recipeParser = new Scanner(recipeName);
-					recipeTree.add(recipeName, recipeName.toLowerCase());//add itself to the tree
-					while(recipeParser.hasNext())//add the subset of words to the tree as well
+					while(recipeParser.hasNext())
 					{
-						recipeTree.add(recipeName,recipeParser.next().toLowerCase());
+						recipeTree.add(recipeName,recipeParser.next());
 					}
 				}
 			}

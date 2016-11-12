@@ -29,6 +29,7 @@ public class ScheduleTab extends Tab
 	public ScheduleTab(String higherWorkingDirectory,BinarySearchTree<String,String> recipeTree)throws NotImplementedException
 	{
 		workingDirectory = higherWorkingDirectory + "\\Schedule";
+		System.out.println("new working directory is " + workingDirectory);
 		File testDirectory = new File(workingDirectory);
 		if(!testDirectory.exists()) 
 			if(!testDirectory.mkdirs())System.out.println("Failed to make directory " + workingDirectory);

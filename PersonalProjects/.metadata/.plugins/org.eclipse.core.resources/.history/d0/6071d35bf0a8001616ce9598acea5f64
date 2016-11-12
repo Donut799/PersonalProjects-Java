@@ -13,11 +13,27 @@ import javafx.application.Application;
 public class RecipeScheduler extends Application
 {
 	static String workingDirectory;
-	static BinarySearchTree<String, String> recipeTree = new BinarySearchTree<String, String>();
-
 	public static void main(String[] args)
 	{
 		
+		File file = new File("C:/Users/Brendan/Documents/school/2016-2017/LinearDataStructures/HamletTestBooks/hamlet.txt");
+		BinarySearchTree<String, String> testTree = new BinarySearchTree<String, String>();
+		try
+		{
+			Scanner scanner = new Scanner(file);
+			while(scanner.hasNext())
+			{
+				String add = scanner.next();
+				testTree.add(add, add);
+			}
+			System.out.println(testTree.toString());
+			System.out.println(testTree.getExact("deers"));
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+		
+		BinarySearchTree<String, String> a = new BinarySearchTree<String, String>();
 		workingDirectory = System.getProperty("user.dir");
 		
 		File tempTest = new File(workingDirectory);
@@ -25,30 +41,8 @@ public class RecipeScheduler extends Application
 			if(!tempTest.mkdirs())
 				System.out.println("Creation of working directory failed");
 		
-		File recipeDirectory = new File(workingDirectory + "/recipes");
-		if(recipeDirectory.exists())
-		{
-			for(File recipe : recipeDirectory.listFiles())
-			{
-				if(recipe.isDirectory() && !recipe.isFile())
-				{
-					String recipeName = recipe.getName();
-					Scanner recipeParser = new Scanner(recipeName);
-					recipeTree.add(recipeName, recipeName.toLowerCase());//add itself to the tree
-					while(recipeParser.hasNext())//add the subset of words to the tree as well
-					{
-						recipeTree.add(recipeName,recipeParser.next().toLowerCase());
-					}
-				}
-			}
-		}
-		else
-		{
-			if(!recipeDirectory.mkdirs())
-				System.out.println("Creation of recipes directory failed");
-		}
-
-			
+		
+		
 		Application.launch(args);
 		System.out.println("Finished");
 	}
@@ -56,8 +50,8 @@ public class RecipeScheduler extends Application
 	public void start(Stage primaryStage) throws MalformedURLException, NotImplementedException
 	{
 				TabPane tabPane = new TabPane();
-					ScheduleTab scheduleTab = new ScheduleTab(workingDirectory,recipeTree);
-					RecipeTab recipeTab = new RecipeTab(workingDirectory,recipeTree);
+					ScheduleTab scheduleTab = new ScheduleTab(workingDirectory);
+					RecipeTab recipeTab = new RecipeTab(workingDirectory);
 				tabPane.getTabs().add(scheduleTab);
 				tabPane.getTabs().add(recipeTab);
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

@@ -17,6 +17,7 @@ public class RecipeScheduler extends Application
 
 	public static void main(String[] args)
 	{
+		System.out.println("A".compareTo("A"));
 		
 		workingDirectory = System.getProperty("user.dir");
 		

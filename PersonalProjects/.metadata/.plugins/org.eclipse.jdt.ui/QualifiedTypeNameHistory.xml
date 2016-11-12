@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="java.lang.System"/>
-<fullyQualifiedTypeName name="com.sun.prism.paint.Color"/>
 <fullyQualifiedTypeName name="javafx.scene.input.KeyCode"/>
 <fullyQualifiedTypeName name="javafx.scene.text.FontWeight"/>
 <fullyQualifiedTypeName name="javafx.scene.Cursor"/>
@@ -52,12 +50,14 @@
 <fullyQualifiedTypeName name="javafx.scene.paint.Color"/>
 <fullyQualifiedTypeName name="javafx.scene.control.TextFormatter"/>
 <fullyQualifiedTypeName name="javafx.scene.control.TextArea"/>
-<fullyQualifiedTypeName name="java.util.Scanner"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
-<fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="javafx.scene.layout.Pane"/>
 <fullyQualifiedTypeName name="javafx.scene.input.KeyEvent"/>
 <fullyQualifiedTypeName name="javafx.scene.control.Alert.AlertType"/>
 <fullyQualifiedTypeName name="javafx.scene.control.Alert"/>
 <fullyQualifiedTypeName name="java.io.PrintWriter"/>
+<fullyQualifiedTypeName name="javafx.scene.control.Button"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="java.util.Scanner"/>
+<fullyQualifiedTypeName name="java.util.LinkedList"/>
 </qualifiedTypeNameHistroy>

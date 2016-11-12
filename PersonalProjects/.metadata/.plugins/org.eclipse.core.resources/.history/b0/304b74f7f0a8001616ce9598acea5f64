@@ -13,10 +13,9 @@ import javafx.application.Application;
 public class RecipeScheduler extends Application
 {
 	static String workingDirectory;
-	static BinarySearchTree<String, String> recipeTree = new BinarySearchTree<String, String>();
-
 	public static void main(String[] args)
 	{
+		
 		
 		workingDirectory = System.getProperty("user.dir");
 		
@@ -26,19 +25,15 @@ public class RecipeScheduler extends Application
 				System.out.println("Creation of working directory failed");
 		
 		File recipeDirectory = new File(workingDirectory + "/recipes");
+		BinarySearchTree<String, String> recipeTree = new BinarySearchTree<String, String>();
 		if(recipeDirectory.exists())
 		{
 			for(File recipe : recipeDirectory.listFiles())
 			{
 				if(recipe.isDirectory() && !recipe.isFile())
 				{
-					String recipeName = recipe.getName();
-					Scanner recipeParser = new Scanner(recipeName);
-					recipeTree.add(recipeName, recipeName.toLowerCase());//add itself to the tree
-					while(recipeParser.hasNext())//add the subset of words to the tree as well
-					{
-						recipeTree.add(recipeName,recipeParser.next().toLowerCase());
-					}
+					System.out.println(recipe.getName());
+					Scanner recipeParser = new Scanner(recipe.getName());
 				}
 			}
 		}
@@ -56,8 +51,8 @@ public class RecipeScheduler extends Application
 	public void start(Stage primaryStage) throws MalformedURLException, NotImplementedException
 	{
 				TabPane tabPane = new TabPane();
-					ScheduleTab scheduleTab = new ScheduleTab(workingDirectory,recipeTree);
-					RecipeTab recipeTab = new RecipeTab(workingDirectory,recipeTree);
+					ScheduleTab scheduleTab = new ScheduleTab(workingDirectory);
+					RecipeTab recipeTab = new RecipeTab(workingDirectory);
 				tabPane.getTabs().add(scheduleTab);
 				tabPane.getTabs().add(recipeTab);
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

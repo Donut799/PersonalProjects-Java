@@ -53,42 +53,7 @@ public class BinarySearchTree<T ,K extends Comparable<K>>
 			}
 		}
 	}
-	public List<T> getExact(K key)//returns the list of objects that have a key that exactly matches the key that is passes in
-	{
-		//will return null if nothing is found
-		if(root == null)
-		{
-			return null;
-		}//implied else
-		Node<T,K> traverseNode = root;
-		while(true)
-		{
-			int compare = key.compareTo(traverseNode.getKey());
-			if(compare == 0)
-			{
-				return traverseNode.getContent();
-			}
-			else if(compare < 0)
-			{
-				if(traverseNode.getLeftChild() == null)
-				{
-					return null;
-				}
-				//implied else
-				traverseNode = traverseNode.getLeftChild();
-			}
-			else if(compare > 0)
-			{
-				if(traverseNode.getRightChild() == null)
-				{
-					return null;
-				}
-				//implied else
-				traverseNode = traverseNode.getRightChild();
-			}
-		}
-	}
-	public List<T> getPartial(K partialKey)//returns any lists of objects that have a key that includes, but is not limited to the key that is passed in
+	public List<T> get(K key)
 	{
 		return null;//TODO
 	}

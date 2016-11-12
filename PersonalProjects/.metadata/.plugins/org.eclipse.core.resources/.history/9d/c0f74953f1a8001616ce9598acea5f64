@@ -26,9 +26,10 @@ public class ScheduleTab extends Tab
 	private String workingDirectory;
 	private FlowPane weekFlowPane;
 	private Button selectedButton = null;
-	public ScheduleTab(String higherWorkingDirectory,BinarySearchTree<String,String> recipeTree)throws NotImplementedException
+	public ScheduleTab(String higherWorkingDirectory)throws NotImplementedException
 	{
 		workingDirectory = higherWorkingDirectory + "\\Schedule";
+		System.out.println("new working directory is " + workingDirectory);
 		File testDirectory = new File(workingDirectory);
 		if(!testDirectory.exists()) 
 			if(!testDirectory.mkdirs())System.out.println("Failed to make directory " + workingDirectory);
@@ -73,6 +74,7 @@ public class ScheduleTab extends Tab
 		this.setContent(weekLayoutPane);
 		this.setClosable(false);
 	}
+
 	private void weekButtonMouseHandler(MouseEvent e)
 	{
 		if(e.getButton().equals(MouseButton.PRIMARY))

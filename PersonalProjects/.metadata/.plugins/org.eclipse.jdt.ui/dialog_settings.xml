@@ -27,12 +27,13 @@
 		<item value="true" key="expanded0"/>
 	</section>
 	<section name="FatJarPackageWizard">
-		<item value="I:\eclipse\Workspaces\2000-Smith, Brendan" key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION"/>
-		<item value="ConsoleStackAssignment - ConsoleStackAssignment" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
-		<item value="I:\eclipse\FinsihedProjects\ConsoleInfixToPostfix.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
+		<item value="I:\eclipse\Workspaces\2000-Smith, Brendan.xml" key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION"/>
+		<item value="RecipeScheduler - RecipeScheduler" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
+		<item value="C:\RecipeScheduler\ConsoleInfixToPostfix.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
 		<item value="false" key="FatJarPackageWizardPage.ANTSCRIPT_SAVE"/>
 		<item value="1" key="FatJarPackageWizardPage.LIBRARY_HANDLING"/>
 		<list key="FatJarPackageWizardPage.DESTINATION_NAMES_ID">
+			<item value="C:\RecipeScheduler\ConsoleInfixToPostfix.jar"/>
 			<item value="I:\eclipse\FinsihedProjects\ConsoleInfixToPostfix.jar"/>
 		</list>
 		<list key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION_HISTORY">
