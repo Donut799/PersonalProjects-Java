@@ -1,4 +1,3 @@
-import java.util.LinkedList;
 import java.util.List;
 
 public class BinarySearchTree<T ,K extends Comparable<K>>
@@ -29,7 +28,6 @@ public class BinarySearchTree<T ,K extends Comparable<K>>
 			if(compare == 0)
 			{
 				traverseNode.addContent(addObject);
-				return;
 			}
 			else if(compare < 0)
 			{
@@ -53,7 +51,7 @@ public class BinarySearchTree<T ,K extends Comparable<K>>
 			}
 		}
 	}
-	public List<T> get(K key)
+	public T get(K key)
 	{
 		return null;//TODO
 	}
@@ -67,12 +65,12 @@ public class BinarySearchTree<T ,K extends Comparable<K>>
 		String leftToString = "";
 		if(currentNode.getLeftChild() != null)leftToString = recursiveToString(currentNode.getLeftChild());
 		if(currentNode.getRightChild() != null)rightToString = recursiveToString(currentNode.getRightChild());
-		return leftToString + currentNode.toString() + "\n" + rightToString;
+		return leftToString + currentNode.toString() + rightToString;
 	}
 	private class Node<T ,K>
 	{
 		private K key;
-		private List<T> content = new LinkedList<T>();
+		private List<T> content;
 		private Node<T,K> rightChild;
 		private Node<T,K> leftChild;
 		private Node<T,K> parent;

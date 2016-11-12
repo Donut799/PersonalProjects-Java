@@ -24,7 +24,7 @@ public class RecipeScheduler extends Application
 			while(scanner.hasNext())
 			{
 				String add = scanner.next();
-				testTree.add(add, add);
+				testTree.add("content", add);
 			}
 			System.out.println(testTree.toString());
 		} catch (FileNotFoundException e)

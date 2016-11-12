@@ -1,2 +1,2 @@
-null
-;a;b;c;d;e;f;
+;
+;apple;banana;chicken;dick;elph;fart;

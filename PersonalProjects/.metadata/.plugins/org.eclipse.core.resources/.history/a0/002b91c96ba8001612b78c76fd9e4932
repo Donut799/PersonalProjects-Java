@@ -4,41 +4,29 @@ import javafx.stage.Stage;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
-import java.util.Scanner;
 
 import javafx.application.Application;
 
 public class RecipeScheduler extends Application
 {
-	static String workingDirectory;
+	static String workingDirectory = "";
 	public static void main(String[] args)
 	{
-		
-		File file = new File("C:/Users/Brendan/Documents/school/2016-2017/LinearDataStructures/HamletTestBooks/hamlet.txt");
-		BinarySearchTree<String, String> testTree = new BinarySearchTree<String, String>();
-		try
-		{
-			Scanner scanner = new Scanner(file);
-			while(scanner.hasNext())
-			{
-				String add = scanner.next();
-				testTree.add(add, add);
-			}
-			System.out.println(testTree.toString());
-		} catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-		
-		BinarySearchTree<String, String> a = new BinarySearchTree<String, String>();
 		workingDirectory = System.getProperty("user.dir");
+		//workingDirectory = "";//"C:\\RecipeScheduler";//this is temporary until i finish learning about file io
+		System.out.println(System.getProperty("user.dir"));
 		
-		File tempTest = new File(workingDirectory);
+		File tempTest = new File("C:\\RecipeScheduler");
 		if(!tempTest.exists())
 			if(!tempTest.mkdirs())
-				System.out.println("Creation of working directory failed");
+				System.out.println("Creation of  temp working directory failed");
+		
+		
+		File testFolderSystem = new File(workingDirectory + "");
+		if(testFolderSystem.exists());//not used... what was this for?
+		
+		
 		
 		
 		
@@ -54,7 +42,7 @@ public class RecipeScheduler extends Application
 				tabPane.getTabs().add(scheduleTab);
 				tabPane.getTabs().add(recipeTab);
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-			Scene scene = new Scene(tabPane,1/2.0*screenSize.getWidth(),1/2.0*screenSize.getHeight());
+			Scene scene = new Scene(tabPane,3/4.0*screenSize.getWidth(),3/4.0*screenSize.getHeight());
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}

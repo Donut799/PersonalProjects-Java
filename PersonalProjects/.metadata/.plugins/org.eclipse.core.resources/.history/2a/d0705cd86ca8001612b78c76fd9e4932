@@ -1,0 +1,25 @@
+
+public class BinarySearchTree<T extends Comparable<T>,K>
+{
+	public BinarySearchTree()
+	{
+		/*try
+		{
+			(Comparable)typeOfKey;
+		}
+		catch(TypeException e)
+		{
+			
+		}*/
+	}
+	public void add(T addObject, K key)
+	{
+		
+	}
+	private class Node<K>
+	{
+		K key;
+		T content;
+		
+	}
+}

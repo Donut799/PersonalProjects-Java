@@ -16,7 +16,7 @@ public class RecipeScheduler extends Application
 	public static void main(String[] args)
 	{
 		
-		File file = new File("C:/Users/Brendan/Documents/school/2016-2017/LinearDataStructures/HamletTestBooks/hamlet.txt");
+		File file = new File("C:/Users/Brendan/Documents/school/2016-2017/LinearDataStructures/HamletTestBooks/test.txt");
 		BinarySearchTree<String, String> testTree = new BinarySearchTree<String, String>();
 		try
 		{
@@ -26,7 +26,7 @@ public class RecipeScheduler extends Application
 				String add = scanner.next();
 				testTree.add(add, add);
 			}
-			System.out.println(testTree.toString());
+			testTree.toString();
 		} catch (FileNotFoundException e)
 		{
 			e.printStackTrace();
