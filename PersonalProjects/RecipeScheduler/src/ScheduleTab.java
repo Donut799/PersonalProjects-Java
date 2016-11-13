@@ -156,10 +156,10 @@ public class ScheduleTab extends Tab
 			}
 		}
 	}
-	private void refreshWeekOptions()
+	/*private void refreshWeekOptions()
 	{
 		
-	}
+	}*/ //TODO what was this for???
 	private void openWeek(MouseEvent e)
 	{
 		

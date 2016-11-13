@@ -1,0 +1,432 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Scanner;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+
+public class RecipeTab extends Tab
+{
+	IngredientVBox ingredientVBox;
+	private String workingDirectory;
+	BinarySearchTree<String, String> recipeTree = null;
+	// all the data to be taken from the editRecipeView when it is saved
+	String time;
+	String ingredients;
+	String recipe;
+	boolean isNew;
+	String recipeName;
+
+	// stored so we don't have to reload the view, we only change it to this view
+	BorderPane standardViewPane;
+
+	public RecipeTab(String higherWorkingDirectory, BinarySearchTree<String, String> recipeTree)
+			throws MalformedURLException
+	{
+		workingDirectory = higherWorkingDirectory + "\\Recipes";
+		this.recipeTree = recipeTree;
+
+		File testDirectory = new File(workingDirectory);
+		if (!testDirectory.exists())
+			if (!testDirectory.mkdirs())
+				System.out.println("Failed to make directory " + workingDirectory);
+		setStandardView();
+
+		this.setClosable(false);
+	}
+
+	private void setEditRecipeView(String recipeName)
+	{
+		time = null;
+		ingredients = ";";
+		recipe = null;
+		isNew = false;
+		this.recipeName = null;
+		if (recipeName == null)
+			isNew = true;
+		else
+			this.recipeName = recipeName;
+
+		this.setText("Edit Recipe");
+		if (new File(workingDirectory + "/" + recipeName).exists())
+		{
+			File recipeFile = new File(workingDirectory + "/" + recipeName + "/recipe.txt");
+			if (recipeFile.exists())
+			{
+				try
+				{
+					Scanner scanner = new Scanner(recipeFile);
+					recipe = scanner.useDelimiter("\\Z").next();
+					scanner.close();
+
+				} catch (FileNotFoundException e1)
+				{
+					e1.printStackTrace();
+				}
+			}
+			File dataFile = new File(workingDirectory + "/" + recipeName + "/data.txt");
+			if (dataFile.exists())
+			{
+				try
+				{
+					Scanner scanner = new Scanner(dataFile);
+					if (scanner.hasNextLine())
+						time = scanner.nextLine();
+					if (scanner.hasNextLine())
+					{
+						ingredients = scanner.nextLine();
+					}
+					scanner.close();
+
+				} catch (FileNotFoundException e1)
+				{
+					e1.printStackTrace();
+				}
+			}
+
+		}
+
+		BorderPane editRecipeViewPane = new BorderPane();
+		ScrollPane editRecipeScrollPane = new ScrollPane();
+		editRecipeScrollPane.prefWidthProperty().bind(((TabPane)this.getStyleableParent()).widthProperty());
+		VBox editRecipeVBox = new VBox();
+		editRecipeVBox.setPadding(new Insets(0,0,30,0));
+		editRecipeVBox.prefWidthProperty().bind(editRecipeScrollPane.widthProperty());
+		HBox editRecipeTopOptions = new HBox();
+		Label nameLabel = new Label("Name:");
+		nameLabel.setPadding(new Insets(0, 10, 0, 20));
+		TextField nameTextBox = null;
+		if (recipeName == null)
+		{
+			nameTextBox = new TextField();
+			nameTextBox.setPadding(new Insets(0, 0, 5, 0));
+			nameTextBox.setPrefWidth(200);
+			nameTextBox.setStyle("-fx-background-radius: 0");
+			nameTextBox.setOnKeyReleased(e -> name_KeyEventHandler(e));
+		}
+		Label timeLabel = new Label("Time: ");
+		timeLabel.setPadding(new Insets(0, 0, 0, 10));
+		TextField timeTextBox = new TextField();
+		timeTextBox.setText(time);
+		timeTextBox.setPadding(new Insets(0, 0, 5, 0));
+		timeTextBox.setPrefWidth(200);
+		timeTextBox.setStyle("-fx-background-radius: 0");
+		timeTextBox.setOnKeyReleased(e -> time_KeyEventHandler(e));
+		editRecipeTopOptions.getChildren().add(nameLabel);
+		if (nameTextBox != null)
+			editRecipeTopOptions.getChildren().add(nameTextBox);
+		else
+		{
+			Label recipeLabel = new Label(recipeName);
+			recipeLabel.setFont(Font.font("Arial", FontPosture.REGULAR, 18));
+			editRecipeTopOptions.getChildren().add(recipeLabel);
+		}
+		editRecipeTopOptions.getChildren().addAll(timeLabel, timeTextBox);
+		Label recipeTextFieldLabel = new Label("Recipe:");
+		recipeTextFieldLabel.setPadding(new Insets(0, 0, 0, 20));
+		HBox recipeTextAreaOrganizer = new HBox();
+		recipeTextAreaOrganizer.prefWidthProperty().bind(editRecipeScrollPane.widthProperty());
+		recipeTextAreaOrganizer.setPadding(new Insets(0, 50, 0, 20));
+		//Pane textAreaFormatPane = new Pane();
+		//textAreaFormatPane.prefWidthProperty().bind(editRecipeScrollPane.widthProperty());
+		TextArea recipeTextArea = new TextArea(recipe);
+		recipeTextArea.prefWidthProperty().bind(recipeTextAreaOrganizer.widthProperty());
+		recipeTextArea.setPrefHeight(500);
+		recipeTextArea.setStyle("-fx-background-radius: 0");
+		recipeTextArea.setOnKeyReleased(e -> recipe_KeyEventHandler(e));
+		recipeTextAreaOrganizer.getChildren().add(recipeTextArea);
+		HBox ingredientOptionHBox = new HBox();
+		Button addIngredientButton = new Button("Add ingredient");
+		addIngredientButton.setStyle("-fx-background-radius: 0");
+		addIngredientButton.setOnMouseClicked(e -> addIngredient_Click(ingredientVBox));
+		ingredientOptionHBox.setPadding(new Insets(5, 0, 2, 20));
+		ingredientOptionHBox.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,
+				CornerRadii.EMPTY, new BorderWidths(0, 0, 2, 0))));
+		ingredientOptionHBox.getChildren().add(addIngredientButton);
+		// ingredientVBox = new VBox(); this is where this should be
+		ingredientVBox = new IngredientVBox(ingredients);
+		ingredientVBox.setPadding(new Insets(0,50,0,20));
+		ingredientVBox.prefWidthProperty().bind(editRecipeVBox.widthProperty());
+		
+		
+		editRecipeVBox.getChildren().addAll(editRecipeTopOptions, recipeTextFieldLabel, recipeTextAreaOrganizer,
+				ingredientOptionHBox, ingredientVBox);
+		editRecipeScrollPane.setPadding(new Insets(8, 5, 5, 5));
+		// editRecipeScrollPane.fitToHeightProperty();
+		editRecipeScrollPane.setContent(editRecipeVBox);
+		Pane editRecipeOptionsPane = new Pane();
+		editRecipeOptionsPane.setPadding(new Insets(0, 0, 5, 0));
+		Button editRecipeSaveButton = new Button("Save");
+		editRecipeSaveButton.setStyle("-fx-background-radius: 0");
+		editRecipeSaveButton.setLayoutX(5);
+		editRecipeSaveButton.setLayoutY(5);
+		editRecipeSaveButton.setOnMouseClicked(e -> saveRecipeButton_Click(e, isNew));
+		Button editRecipeCancelButton = new Button("Cancel");
+		editRecipeCancelButton.setStyle("-fx-background-radius: 0");
+		editRecipeCancelButton.setLayoutX(50);
+		editRecipeCancelButton.setLayoutY(5);
+		editRecipeCancelButton.setOnMouseClicked(e -> cancelRecipeButton_Click(e));
+		editRecipeOptionsPane.getChildren().add(editRecipeSaveButton);
+		editRecipeOptionsPane.getChildren().add(editRecipeCancelButton);
+		editRecipeViewPane.setCenter(editRecipeScrollPane);
+		editRecipeViewPane.setBottom(editRecipeOptionsPane);
+		this.setContent(editRecipeViewPane);
+	}
+
+	private void addIngredient_Click(IngredientVBox ingredientVBox)
+	{
+		ingredientVBox.addNew();
+	}
+
+	private void time_KeyEventHandler(KeyEvent args)
+	{
+		time = ((TextField) args.getSource()).getText();
+	}
+		
+	private void name_KeyEventHandler(KeyEvent args)
+	{
+		recipeName = ((TextField) args.getSource()).getText();
+	}
+
+	private void recipe_KeyEventHandler(KeyEvent args)
+	{
+		recipe = ((TextArea) args.getSource()).getText();
+	}
+
+	private void saveRecipeButton_Click(MouseEvent e, boolean isNew)
+	{
+		if(recipeName != null)recipeName = recipeName.trim();
+		if (recipeName == null || recipeName.equals(""))
+		{
+			Alert notifyImproperName = new Alert(AlertType.ERROR);
+			notifyImproperName.setContentText("Invalid Name!\n\nYou should consider entering a name");
+			notifyImproperName.show();
+			return;
+		}
+		if (isNew)
+		{
+			List<String> treeReturnList = recipeTree.getExact(recipeName.toLowerCase());
+			if (treeReturnList != null)
+			{
+				for (String content : treeReturnList)
+				{
+					if (content.toLowerCase().equalsIgnoreCase(recipeName))
+					{
+						Alert notifyNameAlreadyTaken = new Alert(AlertType.ERROR);
+						notifyNameAlreadyTaken.setContentText("Name already taken\n\nChoose a different name");
+						notifyNameAlreadyTaken.show();
+						return;
+					}
+				}
+			}
+			recipeTree.add(recipeName, BinarySearchTree.stringToList(recipeName.toLowerCase()));//add all partial keys of the recipeName
+			File newRecipeFile = new File(workingDirectory + "/" + recipeName);
+			newRecipeFile.mkdirs();
+		}
+		try
+		{
+			PrintWriter dataWriter = new PrintWriter(workingDirectory + "/" + recipeName + "/" + "data.txt", "UTF-8");
+			dataWriter.println(time);
+			dataWriter.print(";");
+			dataWriter.print(ingredientVBox.toString());
+			dataWriter.close();
+			
+			PrintWriter recipeWriter = new PrintWriter(workingDirectory + "/" + recipeName + "/" + "recipe.txt", "UTF-8");
+			recipeWriter.print(recipe + " ");
+			recipeWriter.close();
+		} catch (FileNotFoundException | UnsupportedEncodingException e1)
+		{
+			e1.printStackTrace();
+		}
+
+		setStandardView();
+	}
+
+	private void cancelRecipeButton_Click(MouseEvent e)
+	{
+		setStandardView();
+	}
+
+	public void setStandardView()
+	{
+		this.setText("Recipes");
+		standardViewPane = new BorderPane();
+		Pane addRecipePane = new Pane();
+		addRecipePane.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY,
+				new BorderWidths(2, 0, 0, 0))));
+		Button addRecipe = new Button("Add Recipe");
+		addRecipe.setLayoutX(3);
+		addRecipe.setStyle("-fx-background-radius: 0");
+		addRecipe.setLayoutY(5);
+		addRecipe.setOnMouseClicked(e -> addRecipeButton_Clicked(e));
+		Button refreshRecipeList = new Button("Refresh");
+		refreshRecipeList.setStyle("-fx-background-radius: 0");
+		refreshRecipeList.setLayoutX(85);
+		refreshRecipeList.setLayoutY(5);
+		ScrollPane recipeScrollPane = new ScrollPane();
+		//VBox recipeList = new VBox();
+		RecipeVBox recipeList = new RecipeVBox();
+		refreshRecipeList.setOnMouseClicked(e -> recipeList.refreshList());
+		recipeList.prefWidthProperty().bind(recipeScrollPane.widthProperty());
+		recipeList.setPadding(new Insets(0, 15, 0, 0));
+		recipeList.refreshList();
+		recipeScrollPane.setContent(recipeList);
+		addRecipePane.getChildren().addAll(addRecipe, refreshRecipeList);
+		standardViewPane.setTop(addRecipePane);
+		standardViewPane.setCenter(recipeScrollPane);
+		this.setContent(standardViewPane);
+	}
+
+	private void addRecipeButton_Clicked(MouseEvent e)
+	{
+		setEditRecipeView(null);
+	}
+	
+	private void editButtonMouseDown(MouseEvent e)
+	{
+		File editButtonFile = new File(workingDirectory + "\\InverseEdit.jpg");
+		Image editButtonJPG;
+		try
+		{
+			editButtonJPG = new Image(editButtonFile.toURI().toURL().toExternalForm());
+			ImageView editButtonImageView = new ImageView(editButtonJPG);
+			editButtonImageView.setFitWidth(20);
+			editButtonImageView.setPreserveRatio(true);
+			((Button) e.getSource()).setGraphic(editButtonImageView);
+		} catch (MalformedURLException e1)
+		{
+			// do nothing
+		}
+	}
+
+	private void editButtonMouseReleased(MouseEvent e)
+	{
+		File editButton = new File(workingDirectory + "\\Edit.jpg");
+		Image editButtonJPG;
+		try
+		{
+			editButtonJPG = new Image(editButton.toURI().toURL().toExternalForm());
+			ImageView editButtonImageView = new ImageView(editButtonJPG);
+			editButtonImageView.setFitWidth(20);
+			editButtonImageView.setPreserveRatio(true);
+			((Button) e.getSource()).setGraphic(editButtonImageView);
+		} catch (MalformedURLException e1)
+		{
+			// do nothing
+		}
+		// get the name of the
+		setEditRecipeView(((Button) e.getSource()).getId());
+	}
+	
+	private class RecipeVBox extends VBox
+	{
+		RecipeVBox thisVBox = this;
+		RecipeVBox()
+		{
+			
+		}
+		public void refreshList()
+		{
+			this.getChildren().clear();
+			File recipeDirectory = new File(workingDirectory);
+			BinarySearchTree<String, String> sortTree = new BinarySearchTree<String, String>();
+			for (File sub : recipeDirectory.listFiles())
+			{
+				if (sub.isDirectory())
+				{
+					sortTree.add(sub.getName(), sub.getName().toLowerCase());
+				}
+			}
+			for(String sorted : sortTree.getSortedList())
+			{
+				RecipeHBox recipeHBox = new RecipeHBox(sorted);
+				this.getChildren().add(recipeHBox);
+			}
+			
+		}
+		private void remove(HBox removeHBox)
+		{
+			this.getChildren().remove(removeHBox);
+		}
+		
+		private class RecipeHBox extends HBox
+		{
+			RecipeHBox(String recipeName)
+			{
+				Label recipeLabel = new Label(recipeName);
+				recipeLabel.setFont(Font.font("Arial", FontPosture.REGULAR, 20));
+				HBox recipeOptions = new HBox();
+					File editButton = new File(workingDirectory + "\\edit.jpg");
+					Image editButtonJPG = null;
+					try
+					{
+						editButtonJPG = new Image(editButton.toURI().toURL().toExternalForm());
+					} catch (MalformedURLException e1)
+					{
+						e1.printStackTrace();
+					}
+					ImageView editButtonImageView = new ImageView(editButtonJPG);
+					editButtonImageView.setFitWidth(20);
+					editButtonImageView.setPreserveRatio(true);
+					Button editRecipeBt = new Button("", editButtonImageView);
+					editRecipeBt.setId(recipeName);
+					editRecipeBt.setStyle("-fx-background-radius: 0");
+					editRecipeBt.setPadding(new Insets(2, 2, 2, 2));
+					editRecipeBt.setOnMousePressed(e -> editButtonMouseDown(e));
+					editRecipeBt.setOnMouseReleased(e -> editButtonMouseReleased(e));
+					Button deleteRecipeBt = new Button("X");
+					deleteRecipeBt.setStyle("-fx-background-radius: 0;-fx-text-fill: Red");
+					deleteRecipeBt.setOnMouseClicked(e -> remove(this));
+				recipeOptions.setAlignment(Pos.CENTER_RIGHT);
+				recipeOptions.getChildren().add(editRecipeBt);
+				recipeOptions.getChildren().add(deleteRecipeBt);
+			this.getChildren().add(recipeLabel);
+			this.getChildren().add(recipeOptions);
+			HBox.setHgrow(recipeOptions, Priority.ALWAYS);
+			this.setPadding(new Insets(1, 1, 1, 1));
+			this.prefWidthProperty().bind(thisVBox.widthProperty());
+			this.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY,
+					new BorderWidths(2, 2, 2, 2))));
+			}
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+

@@ -1,2 +1,0 @@
-;
-;apple;banana;chicken;dick;ear;fish;;;

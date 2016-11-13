@@ -6,6 +6,7 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.util.List;
 import java.util.Scanner;
 
 import javafx.application.Application;
@@ -17,6 +18,29 @@ public class RecipeScheduler extends Application
 
 	public static void main(String[] args)
 	{
+		/*File file = new File("C:/Users/Brendan/Documents/school/2016-2017/LinearDataStructures/HamletTestBooks/hamlet.txt");
+		BinarySearchTree<String, String> recipeTree = new BinarySearchTree<String, String>();
+		try
+		{
+			Scanner scanner = new Scanner(file);
+			while(scanner.hasNext())
+			{
+				String input = scanner.next();
+				recipeTree.add(input, input);
+			}
+			for(String output : recipeTree.getSortedList())
+			{
+				System.out.println(output);
+			}
+		} catch (FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/ //tests
+		
+		
+		
+		
 		
 		workingDirectory = System.getProperty("user.dir");
 		
@@ -34,11 +58,8 @@ public class RecipeScheduler extends Application
 				{
 					String recipeName = recipe.getName();
 					Scanner recipeParser = new Scanner(recipeName);
-					recipeTree.add(recipeName, recipeName.toLowerCase());//add itself to the tree
-					while(recipeParser.hasNext())//add the subset of words to the tree as well
-					{
-						recipeTree.add(recipeName,recipeParser.next().toLowerCase());
-					}
+					recipeTree.add(recipeName, BinarySearchTree.stringToList(recipeName));//add itself to the tree
+					
 				}
 			}
 		}
@@ -50,7 +71,7 @@ public class RecipeScheduler extends Application
 
 			
 		Application.launch(args);
-		System.out.println("Finished");
+		System.out.println("Exiting . . .");
 	}
 	@Override
 	public void start(Stage primaryStage) throws MalformedURLException, NotImplementedException

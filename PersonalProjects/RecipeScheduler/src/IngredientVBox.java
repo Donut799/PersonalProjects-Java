@@ -15,13 +15,13 @@ public class IngredientVBox extends VBox
 		{
 			this.addNew(ingredientParser.next(),ingredientParser.next());
 		}
+		ingredientParser.close();
 	}
 	public void addNew(String ingredient, String amount)
 	{
 		IngredientHBox ingredientHBox = new IngredientHBox(ingredient, amount);
 		ingredientHBox.prefWidthProperty().bind(this.widthProperty());
 		this.getChildren().add(ingredientHBox);
-		//System.out.println(this.getChildren().remove(ingredientHBox));
 	}
 	public void addNew()
 	{
@@ -38,8 +38,7 @@ public class IngredientVBox extends VBox
 	}
 	private void deleteIngredient_Click(HBox deleteIngredientHBox)
 	{
-		System.out.println(deleteIngredientHBox);
-		System.out.println(this.getChildren().remove(deleteIngredientHBox));
+		this.getChildren().remove(deleteIngredientHBox);
 	}
 	
 	private class IngredientHBox extends HBox
@@ -51,12 +50,15 @@ public class IngredientVBox extends VBox
 		public IngredientHBox(String ingredient, String amount)
 		{
 			ingredientTextField = new TextField(ingredient);
+			ingredientTextField.setStyle("-fx-background-radius: 0");
 			ingredientTextField.prefWidthProperty().bind(this.widthProperty());
 			this.getChildren().add(ingredientTextField);
 			amountTextField = new TextField(amount);
 			amountTextField.setMinWidth(200);
+			amountTextField.setStyle("-fx-background-radius: 0");
 			this.getChildren().add(amountTextField);
 			deleteButton = new myButton(this);
+			deleteButton.setFocusTraversable(false);
 			deleteButton.setOnMouseClicked(e -> deleteIngredient_Click(deleteButton.getHBox()));
 			this.getChildren().add(deleteButton);
 		}

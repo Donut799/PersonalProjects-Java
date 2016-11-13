@@ -29,7 +29,26 @@ public class BinarySearchTree<T ,K extends Comparable<K>>
 		{
 			returnList.add(scanner.next());
 		}
+		scanner.close();
 		return returnList;
+	}
+	public static <R extends Comparable<R>> List<R> removeDuplicates(List<R> dirtyList)
+	{
+		BinarySearchTree<R,R> sorter = new BinarySearchTree<R,R>();
+		for(R parse : dirtyList)
+		{
+			sorter.add(parse, parse);
+		}
+		dirtyList.clear();
+		dirtyList = sorter.getSortedList();		
+		List<R> cleanList = new LinkedList<R>();
+		R checkForDuplicate = null;
+		for(R item : dirtyList)
+		{
+			if(!item.equals(checkForDuplicate))cleanList.add(item);
+			checkForDuplicate = item;
+		}
+		return cleanList;
 	}
 	public void add(T addObject, K key)
 	{
@@ -104,9 +123,26 @@ public class BinarySearchTree<T ,K extends Comparable<K>>
 			}
 		}
 	}
+	public boolean isEmpty()
+	{
+		return root == null;
+	}
 	public List<T> getPartial(K partialKey)//returns any lists of objects that have a key that includes, but is not limited to the key that is passed in
 	{
 		return null;//TODO
+	}
+	public List<T> getSortedList()
+	{
+		if(root != null)return getSortedListRecursive(root);
+		else return new LinkedList<T>();
+	}
+	private List<T> getSortedListRecursive(Node<T,K> root)
+	{
+		List<T> returnList = new LinkedList<T>();
+		if(root.getLeftChild() != null) returnList.addAll(getSortedListRecursive(root.getLeftChild()));
+		returnList.addAll(root.getContent());
+		if(root.getRightChild() != null) returnList.addAll(getSortedListRecursive(root.getRightChild()));
+		return returnList;
 	}
 	public String toString()
 	{
@@ -120,53 +156,53 @@ public class BinarySearchTree<T ,K extends Comparable<K>>
 		if(currentNode.getRightChild() != null)rightToString = recursiveToString(currentNode.getRightChild());
 		return leftToString + currentNode.toString() + "\n" + rightToString;
 	}
-	private class Node<T ,K>
+	private class Node<TYPE ,KEY>
 	{
-		private K key;
-		private List<T> content = new LinkedList<T>();
-		private Node<T,K> rightChild;
-		private Node<T,K> leftChild;
-		private Node<T,K> parent;
+		private KEY key;
+		private List<TYPE> content = new LinkedList<TYPE>();
+		private Node<TYPE,KEY> rightChild;
+		private Node<TYPE,KEY> leftChild;
+		//private Node<TYPE,KEY> parent; not necessary as far as i can tell
 		
-		Node(Node<T,K> parent, T content, K key)
+		Node(Node<TYPE,KEY> parent, TYPE content, KEY key)
 		{
-			this.parent = parent;
+			//this.parent = parent; refer to commented property "parent"
 			this.content.add(content);
 			this.key = key;
 		}
-		K getKey()
+		KEY getKey()
 		{
 			return key;
 		}
-		List<T> getContent()
+		List<TYPE> getContent()
 		{
 			return content;
 		}
-		void addContent(T moreContent)
+		void addContent(TYPE moreContent)
 		{
 			content.add(moreContent);
 		}
-		Node<T, K> getParent()
+		/*Node<TYPE, KEY> getParent()
 		{
 			return parent;
-		}
-		Node<T, K> getRightChild()
+		}*/ //not used yet
+		Node<TYPE, KEY> getRightChild()
 		{
 			return rightChild;
 		}
-		Node<T, K> getLeftChild()
+		Node<TYPE, KEY> getLeftChild()
 		{
 			return leftChild;
 		}
-		void setParent(Node<T,K> setParent)
+		/*void setParent(Node<TYPE,KEY> setParent)
 		{
 			this.parent = setParent;
-		}
-		void setRightChild(Node<T,K> setRightChild)
+		}*/ //refer to commented property "parent"
+		void setRightChild(Node<TYPE,KEY> setRightChild)
 		{
 			this.rightChild = setRightChild;
 		}
-		void setLeftChild(Node<T,K> setLeftChild)
+		void setLeftChild(Node<TYPE,KEY> setLeftChild)
 		{
 			this.leftChild = setLeftChild;
 		}
