@@ -14,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -36,20 +37,18 @@ import javafx.scene.text.FontPosture;
 
 public class RecipeTab extends Tab
 {
-	VBox referenceTo = null;
+	VBox referenceTo;
+	IngredientVBox ingredientVBox;
 	private String workingDirectory;
 	BinarySearchTree<String, String> recipeTree = null;
 	// all the data to be taken from the editRecipeView when it is saved
 	String time;
-	List<String> ingredients = new ArrayList<String>();// even indexes store
-														// ingredients while odd
-														// store amounts
+	String ingredients;
 	String recipe;
 	boolean isNew;
 	String recipeName;
 
-	// stored so we don't have to reload the view, we only change it to this
-	// view
+	// stored so we don't have to reload the view, we only change it to this view
 	BorderPane standardViewPane;
 
 	public RecipeTab(String higherWorkingDirectory, BinarySearchTree<String, String> recipeTree)
@@ -70,7 +69,7 @@ public class RecipeTab extends Tab
 	private void setEditRecipeView(String recipeName)
 	{
 		time = null;
-		ingredients = new ArrayList<String>();
+		ingredients = ";";
 		recipe = null;
 		isNew = false;
 		this.recipeName = null;
@@ -104,10 +103,7 @@ public class RecipeTab extends Tab
 						time = scanner.nextLine();
 					if (scanner.hasNextLine())
 					{
-						ingredients = new ArrayList<String>();
-						scanner.useDelimiter(";");
-						while (scanner.hasNext())
-							ingredients.add(scanner.next());
+						ingredients = scanner.nextLine();
 					}
 
 				} catch (FileNotFoundException e1)
@@ -120,7 +116,10 @@ public class RecipeTab extends Tab
 
 		BorderPane editRecipeViewPane = new BorderPane();
 		ScrollPane editRecipeScrollPane = new ScrollPane();
+		editRecipeScrollPane.prefWidthProperty().bind(((TabPane)this.getStyleableParent()).widthProperty());
 		VBox editRecipeVBox = new VBox();
+		editRecipeVBox.setPadding(new Insets(0,0,30,0));
+		editRecipeVBox.prefWidthProperty().bind(editRecipeScrollPane.widthProperty());
 		HBox editRecipeTopOptions = new HBox();
 		Label nameLabel = new Label("Name:");
 		nameLabel.setPadding(new Insets(0, 10, 0, 20));
@@ -128,14 +127,16 @@ public class RecipeTab extends Tab
 		if (recipeName == null)
 		{
 			nameTextBox = new TextField();
-			nameTextBox.setPadding(new Insets(0, 100, 5, 0));
+			nameTextBox.setPadding(new Insets(0, 0, 5, 0));
+			nameTextBox.setPrefWidth(200);
 			nameTextBox.setOnKeyReleased(e -> name_KeyEventHandler(e));
 		}
 		Label timeLabel = new Label("Time: ");
 		timeLabel.setPadding(new Insets(0, 0, 0, 10));
 		TextField timeTextBox = new TextField();
 		timeTextBox.setText(time);
-		timeTextBox.setPadding(new Insets(0, 100, 5, 0));
+		timeTextBox.setPadding(new Insets(0, 0, 5, 0));
+		timeTextBox.setPrefWidth(200);
 		timeTextBox.setOnKeyReleased(e -> time_KeyEventHandler(e));
 		editRecipeTopOptions.getChildren().add(nameLabel);
 		if (nameTextBox != null)
@@ -150,58 +151,31 @@ public class RecipeTab extends Tab
 		Label recipeTextFieldLabel = new Label("Recipe:");
 		recipeTextFieldLabel.setPadding(new Insets(0, 0, 0, 20));
 		HBox recipeTextAreaOrganizer = new HBox();
-		recipeTextAreaOrganizer.setPadding(new Insets(0, 0, 0, 20));
+		recipeTextAreaOrganizer.prefWidthProperty().bind(editRecipeScrollPane.widthProperty());
+		recipeTextAreaOrganizer.setPadding(new Insets(0, 50, 0, 20));
+		//Pane textAreaFormatPane = new Pane();
+		//textAreaFormatPane.prefWidthProperty().bind(editRecipeScrollPane.widthProperty());
 		TextArea recipeTextArea = new TextArea(recipe);
-		recipeTextArea.prefWidthProperty().bind(editRecipeScrollPane.widthProperty());
+		recipeTextArea.prefWidthProperty().bind(recipeTextAreaOrganizer.widthProperty());
 		recipeTextArea.setPrefHeight(500);
 		recipeTextArea.setOnKeyReleased(e -> recipe_KeyEventHandler(e));
 		recipeTextAreaOrganizer.getChildren().add(recipeTextArea);
 		HBox ingredientOptionHBox = new HBox();
-		final VBox ingredientVBox = new VBox();// this is not where it belongs
-												// but i put it here solely for
-												// the purpose of allowing the
-												// addRecipeButton to be able to
-												// reference it in the
-												// clickEventHandler
 		Label ingredientLabel = new Label("Ingredients");
-		ingredientLabel.setPadding(new Insets(5, 10, 0, 0));
-		Button addRecipeButton = new Button("add");
-		addRecipeButton.setStyle("-fx-background-radius: 0");
-		addRecipeButton.setOnMouseClicked(e -> addRecipe_Click(ingredientVBox));
+		ingredientLabel.setPadding(new Insets(5, 10, 0, 10));
+		Button addIngredientButton = new Button("add");
+		addIngredientButton.setStyle("-fx-background-radius: 0");
+		addIngredientButton.setOnMouseClicked(e -> addIngredient_Click(ingredientVBox));
 		ingredientOptionHBox.setPadding(new Insets(5, 0, 2, 20));
 		ingredientOptionHBox.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,
 				CornerRadii.EMPTY, new BorderWidths(0, 0, 2, 0))));
-		ingredientOptionHBox.getChildren().addAll(addRecipeButton, ingredientLabel);
+		ingredientOptionHBox.getChildren().addAll(addIngredientButton, ingredientLabel);
 		// ingredientVBox = new VBox(); this is where this should be
-		if (ingredients != null)
-		{
-			int count = 0;
-			while (count < (ingredients.size()) / 2)
-			{
-				String ingredientString = ingredients.get(2 * count);
-				String amountString = ingredients.get(2 * count + 1);
-				HBox ingredientHBox = new HBox();
-				BorderPane ingredientBorderPane = new BorderPane();
-				TextField ingredientName = new TextField(ingredientString);
-				ingredientName.setId("" + 2 * count);// id is index in
-														// ingredient list
-				ingredientName.setOnKeyReleased(e -> ingredient_KeyEventHandler(e));
-				HBox amountAndDeleteHBox = new HBox();
-				TextField ingredientAmount = new TextField(amountString);
-				ingredientAmount.setId("" + (2 * count + 1));
-				ingredientAmount.setOnKeyReleased(e -> ingredient_KeyEventHandler(e));
-				Button deleteIngredientButton = new Button("X");
-				deleteIngredientButton.setFocusTraversable(false);
-				deleteIngredientButton.setStyle("-fx-background-radius: 0; -fx-text-fill: Red");
-				amountAndDeleteHBox.getChildren().addAll(ingredientAmount, deleteIngredientButton);
-				ingredientBorderPane.setLeft(ingredientName);
-				ingredientBorderPane.setRight(amountAndDeleteHBox);
-				ingredientHBox.getChildren().add(ingredientBorderPane);
-				ingredientVBox.getChildren().add(ingredientHBox);
-				count++;
-			}
-		}
-
+		ingredientVBox = new IngredientVBox(ingredients);
+		ingredientVBox.setPadding(new Insets(0,50,0,20));
+		ingredientVBox.prefWidthProperty().bind(editRecipeVBox.widthProperty());
+		
+		
 		editRecipeVBox.getChildren().addAll(editRecipeTopOptions, recipeTextFieldLabel, recipeTextAreaOrganizer,
 				ingredientOptionHBox, ingredientVBox);
 		editRecipeScrollPane.setPadding(new Insets(8, 5, 5, 5));
@@ -226,44 +200,16 @@ public class RecipeTab extends Tab
 		this.setContent(editRecipeViewPane);
 	}
 
-	private void ingredient_KeyEventHandler(KeyEvent args)
+	private void addIngredient_Click(IngredientVBox ingredientVBox)
 	{
-		int indexOfName = Integer.parseInt(((TextField) args.getSource()).getId());
-		ingredients.remove(indexOfName);
-		ingredients.add(indexOfName, ((TextField) args.getSource()).getText());
-	}
-
-	private void addRecipe_Click(VBox ingredientVBox)
-	{
-		ingredients.add("");// add the blank string in the list so that we can
-							// replace them later.
-		ingredients.add("");
-
-		HBox ingredientHBox = new HBox();
-		BorderPane ingredientBorderPane = new BorderPane();
-		TextField ingredientName = new TextField();
-		ingredientName.setId("" + (ingredients.size() - 2));// id is index in
-															// ingredient list
-		ingredientName.setOnKeyReleased(e -> ingredient_KeyEventHandler(e));
-		HBox amountAndDeleteHBox = new HBox();
-		TextField ingredientAmount = new TextField();
-		ingredientAmount.setId("" + (ingredients.size() - 1));
-		ingredientAmount.setOnKeyReleased(e -> ingredient_KeyEventHandler(e));
-		Button deleteIngredientButton = new Button("X");
-		deleteIngredientButton.setStyle("-fx-background-radius: 0; -fx-text-fill: Red");
-		amountAndDeleteHBox.getChildren().addAll(ingredientAmount, deleteIngredientButton);
-		ingredientBorderPane.setLeft(ingredientName);
-		ingredientBorderPane.setRight(amountAndDeleteHBox);
-		ingredientHBox.getChildren().add(ingredientBorderPane);
-
-		ingredientVBox.getChildren().add(ingredientHBox);
+		ingredientVBox.addNew();
 	}
 
 	private void time_KeyEventHandler(KeyEvent args)
 	{
 		time = ((TextField) args.getSource()).getText();
 	}
-
+		
 	private void name_KeyEventHandler(KeyEvent args)
 	{
 		recipeName = ((TextField) args.getSource()).getText();
@@ -276,7 +222,7 @@ public class RecipeTab extends Tab
 
 	private void saveRecipeButton_Click(MouseEvent e, boolean isNew)
 	{
-		recipeName = recipeName.trim();
+		if(recipeName != null)recipeName = recipeName.trim();
 		if (recipeName == null || recipeName.equals(""))
 		{
 			Alert notifyImproperName = new Alert(AlertType.ERROR);
@@ -284,22 +230,23 @@ public class RecipeTab extends Tab
 			notifyImproperName.show();
 			return;
 		}
-		List<String> treeReturnList = recipeTree.getExact(recipeName.toLowerCase());
-		if (treeReturnList != null)
-		{
-			for (String content : treeReturnList)
-			{
-				if (content.toLowerCase().equalsIgnoreCase(recipeName))
-				{
-					Alert notifyNameAlreadyTaken = new Alert(AlertType.ERROR);
-					notifyNameAlreadyTaken.setContentText("Name already taken\n\nChoose a different name");
-					notifyNameAlreadyTaken.show();
-					return;
-				}
-			}
-		}
 		if (isNew)
 		{
+			List<String> treeReturnList = recipeTree.getExact(recipeName.toLowerCase());
+			if (treeReturnList != null)
+			{
+				for (String content : treeReturnList)
+				{
+					if (content.toLowerCase().equalsIgnoreCase(recipeName))
+					{
+						Alert notifyNameAlreadyTaken = new Alert(AlertType.ERROR);
+						notifyNameAlreadyTaken.setContentText("Name already taken\n\nChoose a different name");
+						notifyNameAlreadyTaken.show();
+						return;
+					}
+				}
+			}
+			recipeTree.add(recipeName, BinarySearchTree.stringToList(recipeName.toLowerCase()));//add all partial keys of the recipeName
 			File newRecipeFile = new File(workingDirectory + "/" + recipeName);
 			newRecipeFile.mkdirs();
 		}
@@ -308,14 +255,11 @@ public class RecipeTab extends Tab
 			PrintWriter dataWriter = new PrintWriter(workingDirectory + "/" + recipeName + "/" + "data.txt", "UTF-8");
 			dataWriter.println(time);
 			dataWriter.print(";");
-			for (String ingredientData : ingredients)
-			{
-				dataWriter.print(ingredientData + ";");
-			}
+			dataWriter.print(ingredientVBox.toString());
 			dataWriter.close();
-			PrintWriter recipeWriter = new PrintWriter(workingDirectory + "/" + recipeName + "/" + "recipe.txt",
-					"UTF-8");
-			recipeWriter.print(recipe);
+			
+			PrintWriter recipeWriter = new PrintWriter(workingDirectory + "/" + recipeName + "/" + "recipe.txt", "UTF-8");
+			recipeWriter.print(recipe + " ");
 			recipeWriter.close();
 		} catch (FileNotFoundException | UnsupportedEncodingException e1)
 		{
@@ -448,8 +392,6 @@ public class RecipeTab extends Tab
 		{
 			editButtonJPG = new Image(editButton.toURI().toURL().toExternalForm());
 			ImageView editButtonImageView = new ImageView(editButtonJPG);
-			// editButtonImageView.setViewport(new
-			// Rectangle2D(626,626,626,626));
 			editButtonImageView.setFitWidth(20);
 			editButtonImageView.setPreserveRatio(true);
 			((Button) e.getSource()).setGraphic(editButtonImageView);

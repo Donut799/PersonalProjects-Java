@@ -1,5 +1,7 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 
 public class BinarySearchTree<T ,K extends Comparable<K>>
 {
@@ -14,6 +16,20 @@ public class BinarySearchTree<T ,K extends Comparable<K>>
 		{
 			this.add(addObject, key);
 		}
+	}
+	public static List<String> stringToList(String convert)//not useful in this class, just to know where it is
+	{
+		//takes in a String and returns a list of the 
+		//String and all substrings that are delimited by 
+		//whitespace.
+		List<String> returnList = new ArrayList<String>();
+		Scanner scanner = new Scanner(convert);
+		returnList.add(convert);
+		while(scanner.hasNext())
+		{
+			returnList.add(scanner.next());
+		}
+		return returnList;
 	}
 	public void add(T addObject, K key)
 	{
